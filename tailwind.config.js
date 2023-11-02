@@ -8,11 +8,16 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'start-bg': "url('/images/bg_edit.png')",
+        'character-bg': "url('/images/bg_scene2.png')",
+      },
+      width: {
+        gamewidth: '80rem',
+      },
+      height: {
+        gameheight: '45rem',
       },
     },
   },
   plugins: [],
-}
+};
