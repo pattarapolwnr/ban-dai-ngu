@@ -149,6 +149,7 @@ export default function Play() {
       setOpenAngelCard(false);
       setIsUseAngelCard(true);
       setOpenTrapModal(false);
+      setCardPocket([]);
     }, 500);
   };
 
