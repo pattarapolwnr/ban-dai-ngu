@@ -30,7 +30,6 @@ export default function Play() {
   const character = router.query.character;
   const [cardPocket, setCardPocket] = useState([]);
   const [landingEffect, setLandingEffect] = useState('');
-  const [alreadyDisplay, setAlreadyDisplay] = useState(false);
 
   // Display Enemy Dice state
   const [isEnemyDice, setIsEnemyDice] = useState(false);
@@ -44,6 +43,11 @@ export default function Play() {
   const [openCardModal, setOpenCardModal] = useState(false);
   const [openTrapModal, setOpenTrapModal] = useState(false);
   const [openMysteryModal, setOpenMysteryModal] = useState(false);
+  const [openAngelCard, setOpenAngelCard] = useState(false);
+  const [openMonsterModal, setOpenMonsterModal] = useState(false);
+
+  //use Angel Card
+  const [isUseAngelCard, setIsUseAngelCard] = useState(false);
 
   //Spinning wheel
   const segColors = [
@@ -55,6 +59,13 @@ export default function Play() {
     '#F9AA1F',
     '#EC3F3F',
     '#FF9000',
+    '#EE4040',
+    '#F0CF50',
+    '#815CD1',
+    '#3DA5E0',
+    '#34A24F',
+    '#F9AA1F',
+    '#EC3F3F',
   ];
 
   // Cards
@@ -66,7 +77,7 @@ export default function Play() {
     'Increase HP 2 Point',
     'Go Ahead 3 blocks',
     'Go Ahead 2 blocks',
-    'Optional Card',
+    'Increase HP 1 Point',
   ];
 
   const displayCardEffect = (effect) => {
@@ -108,15 +119,16 @@ export default function Play() {
       setIndex((prevIndex) => prevIndex + 3);
     } else if (effect === 'Go Ahead 2 blocks') {
       setIndex((prevIndex) => prevIndex + 2);
-    } else if (effect === 'Optional Card') {
-      // Check card Pocket is empty?
-      if (cardPocket.length === 0) {
-        const newCardPocket = [...cardPocket, 'Optional Card'];
-        setCardPocket(newCardPocket);
-      } else {
-        setCardPocket(['Optional Card']);
-      }
     }
+    // else if (effect === 'Optional Card') {
+    //   // Check card Pocket is empty?
+    //   if (cardPocket.length === 0) {
+    //     const newCardPocket = [...cardPocket, 'Optional Card'];
+    //     setCardPocket(newCardPocket);
+    //   } else {
+    //     setCardPocket(['Optional Card']);
+    //   }
+    // }
   };
 
   const cards_onFinished = (winner) => {
@@ -126,7 +138,99 @@ export default function Play() {
     setTimeout(() => {
       setOpenCardModal(false);
     }, 2000);
-    displayCardEffect(winner);
+    setTimeout(() => {
+      displayCardEffect(winner);
+    }, 2000);
+  };
+
+  // Angel Card
+  const useAngelCard = () => {
+    setTimeout(() => {
+      setOpenAngelCard(false);
+      setIsUseAngelCard(true);
+      setOpenTrapModal(false);
+    }, 500);
+  };
+
+  // Mystery
+  const mystery_segments = [
+    'Trap',
+    'Trap',
+    'Card',
+    'Trap',
+    'Card',
+    'Card',
+    'Trap',
+    'Card',
+  ];
+
+  const mystery_onFinished = (winner) => {
+    setTimeout(() => {
+      alert(winner);
+    }, 500);
+    setTimeout(() => {
+      setOpenMysteryModal(false);
+    }, 2000);
+    if (winner === 'Trap') {
+      setTimeout(() => {
+        setOpenTrapModal(true);
+      }, 2000);
+    } else if (winner === 'Card') {
+      setTimeout(() => {
+        setOpenCardModal(true);
+      }, 2000);
+    }
+  };
+
+  //Traps
+  const traps_segments = [
+    'Monster',
+    'Reduce 1 heart',
+    'Restart',
+    'Walk back 1 block',
+    'Monster',
+    'Reduce 2 heart',
+    'Walk back 2 blocks',
+    'Monster',
+    'Reduce 3 heart',
+    'Walk back 3 blocks',
+    'Monster',
+    'Walk back 4 blocks',
+    'Reduce 1 heart',
+  ];
+
+  const displayTrapEffect = (effect) => {
+    if (effect === 'Monster') {
+      setIsEnemyDice(true);
+    } else if (effect === 'Restart') {
+      setIndex(1);
+    } else if (effect === 'Reduce 1 heart') {
+      setHP((prevHP) => prevHP - 1);
+    } else if (effect === 'Reduce 2 heart') {
+      setHP((prevHP) => prevHP - 2);
+    } else if (effect === 'Reduce 3 heart') {
+      setHP((prevHP) => prevHP - 3);
+    } else if (effect === 'Walk back 1 block') {
+      setIndex((prevIndex) => prevIndex - 1);
+    } else if (effect === 'Walk back 2 blocks') {
+      setIndex((prevIndex) => prevIndex - 2);
+    } else if (effect === 'Walk back 3 blocks') {
+      setIndex((prevIndex) => prevIndex - 3);
+    } else if (effect === 'Walk back 4 block') {
+      setIndex((prevIndex) => prevIndex - 4);
+    }
+  };
+
+  const traps_onFinished = (winner) => {
+    setTimeout(() => {
+      alert(winner);
+    }, 500);
+    setTimeout(() => {
+      setOpenTrapModal(false);
+    }, 2000);
+    setTimeout(() => {
+      displayTrapEffect(winner);
+    }, 2000);
   };
 
   // Initial HP
@@ -179,6 +283,14 @@ export default function Play() {
       setHP_Bar(hp_bar);
     };
     generateHP_Bar();
+    if (HP == 0) {
+      setTimeout(() => {
+        alert('Game Over !');
+      }, 2000);
+      setTimeout(() => {
+        router.push('/gameover');
+      }, 2000);
+    }
   }, [HP]);
 
   // Change Character Position
@@ -257,21 +369,57 @@ export default function Play() {
       setTimeout(() => {
         setOpenCardModal(true);
       }, 1000);
+      setLandingEffect('');
       return;
     } else if (landingEffect === 'traps') {
+      if (cardPocket.length > 0) {
+        if (cardPocket[0] === 'Angel Card') {
+          setTimeout(() => {
+            setOpenAngelCard(true);
+          }, 1000);
+
+          if (isUseAngelCard) {
+            setLandingEffect('');
+            return;
+          }
+        }
+      }
       setTimeout(() => {
         setOpenTrapModal(true);
       }, 1000);
+      setLandingEffect('');
       return;
     } else if (landingEffect === 'mystery') {
       setTimeout(() => {
         setOpenMysteryModal(true);
       }, 1000);
+      setLandingEffect('');
       return;
     } else {
       return;
     }
   }, [landingEffect]);
+
+  // Shuffle array function
+  function shuffle(array) {
+    let currentIndex = array.length,
+      randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex > 0) {
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+
+    return array;
+  }
 
   return (
     <>
@@ -290,16 +438,15 @@ export default function Play() {
         <Modal.Body className="overflow-hidden">
           <div className="max-w-xl">
             <WheelComponent
-              segments={cards_segments}
+              segments={shuffle(cards_segments)}
               segColors={segColors}
               onFinished={(winner) => cards_onFinished(winner)}
               primaryColor="black"
               contrastColor="white"
               buttonText="Spin"
               size={250}
-              isOnlyOnce={false}
-              upDuration={1000}
-              downDuration={1000}
+              upDuration={500}
+              downDuration={200}
               fontFamily="Arial"
               className="spinning-wheels"
             />
@@ -310,20 +457,21 @@ export default function Play() {
       {/* Trap Modal */}
       <Modal show={openTrapModal} onClose={() => setOpenTrapModal(false)}>
         <Modal.Header>Trap Spinning Wheel</Modal.Header>
-        <Modal.Body>
-          <div className="space-y-6">
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              With less than a month to go before the European Union enacts new
-              consumer privacy laws for its citizens, companies around the world
-              are updating their terms of service agreements to comply.
-            </p>
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              The European Union’s General Data Protection Regulation (G.D.P.R.)
-              goes into effect on May 25 and is meant to ensure a common set of
-              data rights in the European Union. It requires organizations to
-              notify users as soon as possible of high-risk data breaches that
-              could personally affect them.
-            </p>
+        <Modal.Body className="overflow-hidden">
+          <div className="max-w-xl">
+            <WheelComponent
+              segments={shuffle(traps_segments)}
+              segColors={segColors}
+              onFinished={(winner) => traps_onFinished(winner)}
+              primaryColor="black"
+              contrastColor="white"
+              buttonText="Spin"
+              size={250}
+              upDuration={500}
+              downDuration={200}
+              fontFamily="Arial"
+              className="spinning-wheels"
+            />
           </div>
         </Modal.Body>
       </Modal>
@@ -331,20 +479,41 @@ export default function Play() {
       {/* Mystery Modal */}
       <Modal show={openMysteryModal} onClose={() => setOpenMysteryModal(false)}>
         <Modal.Header>Mystery Spinning Wheel</Modal.Header>
+        <Modal.Body className="overflow-hidden">
+          <div className="max-w-xl">
+            <WheelComponent
+              segments={shuffle(mystery_segments)}
+              segColors={segColors}
+              onFinished={(winner) => mystery_onFinished(winner)}
+              primaryColor="black"
+              contrastColor="white"
+              buttonText="Spin"
+              size={250}
+              upDuration={500}
+              downDuration={200}
+              fontFamily="Arial"
+              className="spinning-wheels"
+            />
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Angel Card Modal */}
+      <Modal show={openAngelCard} size="md" popup>
+        <Modal.Header />
         <Modal.Body>
-          <div className="space-y-6">
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              With less than a month to go before the European Union enacts new
-              consumer privacy laws for its citizens, companies around the world
-              are updating their terms of service agreements to comply.
-            </p>
-            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-              The European Union’s General Data Protection Regulation (G.D.P.R.)
-              goes into effect on May 25 and is meant to ensure a common set of
-              data rights in the European Union. It requires organizations to
-              notify users as soon as possible of high-risk data breaches that
-              could personally affect them.
-            </p>
+          <div className="text-center">
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Do you want to use an "Angel Card"? (To skip this trap)
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={() => useAngelCard()}>
+                Yes
+              </Button>
+              <Button color="gray" onClick={() => setOpenAngelCard(false)}>
+                No, cancel
+              </Button>
+            </div>
           </div>
         </Modal.Body>
       </Modal>
@@ -353,20 +522,20 @@ export default function Play() {
         <div
           className={`${righteous.className} relative flex flex-col m-6 shadow-2xl rounded-2xl bg-white w-gamewidth h-gameheight`}
         >
-          {/* Left Section */}
           <div className="flex justify-center items-center w-full px-10 py-1">
-            <div className="flex flex-col w-1/4 text-gray-950">
-              <div className="flex flex-col">
+            {/* Left Section */}
+            <div className="flex flex-col w-1/4 justify-center items-center text-gray-950">
+              <div className="flex flex-col  space-y-20">
                 <div className="flex flex-row space-x-10 justify-center items-center">
                   <h1>Your HP</h1>
                   <div className="grid grid-cols-3 gap-4">{HP_Bar}</div>
                 </div>
-                <div className="flex justify-center items-center">
-                  <h1 className="my-5">
+                <div className="flex justify-start items-center">
+                  <h1 className="">
                     Card Pocket: {cardPocket ? cardPocket[0] : ''}
                   </h1>
                 </div>
-                <div className="flex flex-row justify-center items-center mt-10">
+                <div className="flex flex-row justify-center items-center">
                   <h1 className="font-light text-gray-500">Your Dice</h1>
                   <div className="ml-10">
                     <Dice
@@ -376,18 +545,6 @@ export default function Play() {
                         setIndex((prevIndex) => prevIndex + value);
                       }}
                     />
-                  </div>
-                </div>
-                <div
-                  className={
-                    isEnemyDice
-                      ? 'flex flex-col justify-center items-center'
-                      : 'hidden'
-                  }
-                >
-                  <h1 className="mt-10 font-light text-gray-700">Enemy Dice</h1>
-                  <div className="mt-5">
-                    <Dice size={100} />
                   </div>
                 </div>
               </div>
