@@ -11,7 +11,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import Board from '@/components/board';
 import Dice from 'react-dice-roll';
-import diceRoll from '../public/sounds/dice_roll.mp3';
+import check_landing from '@/utils/check_landing';
+import { Button, Modal } from 'flowbite-react';
+import WheelComponent from 'react-wheel-of-prizes';
+// import 'react-wheel-of-prizes/dist/index.css';
 
 const righteous = Righteous({
   subsets: ['latin'],
@@ -21,10 +24,13 @@ const righteous = Righteous({
 export default function Play() {
   const router = useRouter();
   const mode = router.query.mode;
+  const [maxHP, setMaxHP] = useState(7);
   const [HP, setHP] = useState(3);
   const [HP_Bar, setHP_Bar] = useState([]);
-  const hp_bar = [];
   const character = router.query.character;
+  const [cardPocket, setCardPocket] = useState([]);
+  const [landingEffect, setLandingEffect] = useState('');
+  const [alreadyDisplay, setAlreadyDisplay] = useState(false);
 
   // Display Enemy Dice state
   const [isEnemyDice, setIsEnemyDice] = useState(false);
@@ -32,8 +38,98 @@ export default function Play() {
   //Character Position
   const [index, setIndex] = useState(1);
   const [diceNumber, setDiceNumber] = useState(1);
-  const [position, setPosition] = useState({ top: 630, left: 120 });
+  const [position, setPosition] = useState({ top: 610, left: 120 });
 
+  //Modal State
+  const [openCardModal, setOpenCardModal] = useState(false);
+  const [openTrapModal, setOpenTrapModal] = useState(false);
+  const [openMysteryModal, setOpenMysteryModal] = useState(false);
+
+  //Spinning wheel
+  const segColors = [
+    '#EE4040',
+    '#F0CF50',
+    '#815CD1',
+    '#3DA5E0',
+    '#34A24F',
+    '#F9AA1F',
+    '#EC3F3F',
+    '#FF9000',
+  ];
+
+  // Cards
+  const cards_segments = [
+    'Increase HP 1 Point',
+    'Angel Card',
+    'Double Damage',
+    'Go Ahead 1 block',
+    'Increase HP 2 Point',
+    'Go Ahead 3 blocks',
+    'Go Ahead 2 blocks',
+    'Optional Card',
+  ];
+
+  const displayCardEffect = (effect) => {
+    if (effect === 'Increase HP 1 Point') {
+      // Check HP is full?
+      if (HP == maxHP) {
+        return;
+      } else {
+        setHP((prevHP) => prevHP + 1);
+      }
+    } else if (effect === 'Angel Card') {
+      // Check card Pocket is empty?
+      if (cardPocket.length === 0) {
+        const newCardPocket = [...cardPocket, 'Angel Card'];
+        setCardPocket(newCardPocket);
+      } else {
+        setCardPocket(['Angel Card']);
+      }
+    } else if (effect === 'Double Damage') {
+      // Check card Pocket is empty?
+      if (cardPocket.length === 0) {
+        const newCardPocket = [...cardPocket, 'Double Damage'];
+        setCardPocket(newCardPocket);
+      } else {
+        setCardPocket(['Double Damage']);
+      }
+    } else if (effect === 'Go Ahead 1 block') {
+      setIndex((prevIndex) => prevIndex + 1);
+    } else if (effect === 'Increase HP 2 Point') {
+      // Check HP is full?
+      if (HP == maxHP) {
+        return;
+      } else if (HP + 2 <= maxHP) {
+        setHP((prevHP) => prevHP + 2);
+      } else {
+        return;
+      }
+    } else if (effect === 'Go Ahead 3 blocks') {
+      setIndex((prevIndex) => prevIndex + 3);
+    } else if (effect === 'Go Ahead 2 blocks') {
+      setIndex((prevIndex) => prevIndex + 2);
+    } else if (effect === 'Optional Card') {
+      // Check card Pocket is empty?
+      if (cardPocket.length === 0) {
+        const newCardPocket = [...cardPocket, 'Optional Card'];
+        setCardPocket(newCardPocket);
+      } else {
+        setCardPocket(['Optional Card']);
+      }
+    }
+  };
+
+  const cards_onFinished = (winner) => {
+    setTimeout(() => {
+      alert(winner);
+    }, 500);
+    setTimeout(() => {
+      setOpenCardModal(false);
+    }, 2000);
+    displayCardEffect(winner);
+  };
+
+  // Initial HP
   useEffect(() => {
     const generateHP_Bar = () => {
       let hp_bar = [];
@@ -51,64 +147,131 @@ export default function Play() {
       setHP_Bar(hp_bar);
     };
     if (mode === 'easy') {
+      setMaxHP(7);
       setHP(7);
       generateHP_Bar();
     } else if (mode === 'medium') {
+      setMaxHP(5);
       setHP(5);
       generateHP_Bar();
     } else {
+      setMaxHP(3);
       setHP(3);
       generateHP_Bar();
     }
+  }, [maxHP]);
+
+  // Change HP
+  useEffect(() => {
+    const generateHP_Bar = () => {
+      let hp_bar = [];
+      // generate HP Bar
+      for (let index = 0; index < HP; index++) {
+        hp_bar.push(
+          <FontAwesomeIcon
+            icon={faHeart}
+            beat
+            style={{ fontSize: '32px', color: '#FFC0CB' }}
+            key={index}
+          />
+        );
+      }
+      setHP_Bar(hp_bar);
+    };
+    generateHP_Bar();
   }, [HP]);
 
+  // Change Character Position
   useEffect(() => {
     const changePositionFromDice = () => {
       if (index <= 11) {
         const start = 1;
         const left = 120 + (index - start) * 72;
-        setPosition({ top: 630, left: left });
+        setPosition({ top: 610, left: left });
+        setLandingEffect(check_landing(index));
         return;
       } else if (index === 12) {
-        setPosition({ top: 530, left: 840 });
+        setPosition({ top: 510, left: 840 });
+        setLandingEffect(check_landing(index));
         return;
       } else if (index > 12 && index <= 24) {
         let start = 13;
         if (index === 13) {
-          setPosition({ top: 530, left: 840 });
+          setPosition({ top: 410, left: 840 });
+          setLandingEffect(check_landing(index));
+          return;
         } else {
           const left = 840 - (index - start) * 72;
-          setPosition({ top: 430, left: left });
+          setPosition({ top: 410, left: left });
+          setLandingEffect(check_landing(index));
+          return;
         }
       } else if (index === 25) {
-        setPosition({ top: 330, left: 48 });
+        setPosition({ top: 310, left: 48 });
+        setLandingEffect(check_landing(index));
         return;
       } else if (index > 25 && index <= 37) {
         let start = 26;
         if (index === 26) {
-          setPosition({ top: 230, left: 120 });
+          setPosition({ top: 210, left: 48 });
+          setLandingEffect(check_landing(index));
+          return;
         } else {
-          const left = 120 + (index - start) * 72;
-          setPosition({ top: 230, left: left });
+          const left = 48 + (index - start) * 72;
+          setPosition({ top: 210, left: left });
+          setLandingEffect(check_landing(index));
+          return;
         }
       } else if (index === 38) {
-        setPosition({ top: 130, left: 840 });
+        setPosition({ top: 110, left: 840 });
+        setLandingEffect(check_landing(index));
         return;
       } else if (index > 38 && index <= 49) {
         let start = 39;
         if (index === 39) {
-          setPosition({ top: 30, left: 840 });
+          setPosition({ top: 40, left: 840 });
+          setLandingEffect(check_landing(index));
+          return;
         } else {
           const left = 840 - (index - start) * 72;
-          setPosition({ top: 30, left: left });
+          setPosition({ top: 40, left: left });
+          setLandingEffect(check_landing(index));
+          return;
         }
       } else {
-        alert('Congratulations! You win the game');
-        router.push('/');
+        setPosition({ top: 40, left: 48 });
+        setTimeout(() => {
+          alert('Congratulations! You win the game');
+        }, 1000);
+        setTimeout(() => {
+          router.push('/');
+        }, 3000);
       }
     };
     changePositionFromDice();
-  }, [index, diceNumber]);
+  }, [index]);
+
+  // Cards Effect
+  useEffect(() => {
+    if (landingEffect === 'cards') {
+      setTimeout(() => {
+        setOpenCardModal(true);
+      }, 1000);
+      return;
+    } else if (landingEffect === 'traps') {
+      setTimeout(() => {
+        setOpenTrapModal(true);
+      }, 1000);
+      return;
+    } else if (landingEffect === 'mystery') {
+      setTimeout(() => {
+        setOpenMysteryModal(true);
+      }, 1000);
+      return;
+    } else {
+      return;
+    }
+  }, [landingEffect]);
 
   return (
     <>
@@ -121,6 +284,71 @@ export default function Play() {
         loop
         volume={20}
       />
+      {/* Card Modal */}
+      <Modal show={openCardModal} size={'2xl'}>
+        <Modal.Header>Card Spinning Wheel</Modal.Header>
+        <Modal.Body className="overflow-hidden">
+          <div className="max-w-xl">
+            <WheelComponent
+              segments={cards_segments}
+              segColors={segColors}
+              onFinished={(winner) => cards_onFinished(winner)}
+              primaryColor="black"
+              contrastColor="white"
+              buttonText="Spin"
+              size={250}
+              isOnlyOnce={false}
+              upDuration={1000}
+              downDuration={1000}
+              fontFamily="Arial"
+              className="spinning-wheels"
+            />
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Trap Modal */}
+      <Modal show={openTrapModal} onClose={() => setOpenTrapModal(false)}>
+        <Modal.Header>Trap Spinning Wheel</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-6">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              With less than a month to go before the European Union enacts new
+              consumer privacy laws for its citizens, companies around the world
+              are updating their terms of service agreements to comply.
+            </p>
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              The European Union’s General Data Protection Regulation (G.D.P.R.)
+              goes into effect on May 25 and is meant to ensure a common set of
+              data rights in the European Union. It requires organizations to
+              notify users as soon as possible of high-risk data breaches that
+              could personally affect them.
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Mystery Modal */}
+      <Modal show={openMysteryModal} onClose={() => setOpenMysteryModal(false)}>
+        <Modal.Header>Mystery Spinning Wheel</Modal.Header>
+        <Modal.Body>
+          <div className="space-y-6">
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              With less than a month to go before the European Union enacts new
+              consumer privacy laws for its citizens, companies around the world
+              are updating their terms of service agreements to comply.
+            </p>
+            <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+              The European Union’s General Data Protection Regulation (G.D.P.R.)
+              goes into effect on May 25 and is meant to ensure a common set of
+              data rights in the European Union. It requires organizations to
+              notify users as soon as possible of high-risk data breaches that
+              could personally affect them.
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+
       <div className="flex items-center justify-center min-h-screen">
         <div
           className={`${righteous.className} relative flex flex-col m-6 shadow-2xl rounded-2xl bg-white w-gamewidth h-gameheight`}
@@ -133,6 +361,11 @@ export default function Play() {
                   <h1>Your HP</h1>
                   <div className="grid grid-cols-3 gap-4">{HP_Bar}</div>
                 </div>
+                <div className="flex justify-center items-center">
+                  <h1 className="my-5">
+                    Card Pocket: {cardPocket ? cardPocket[0] : ''}
+                  </h1>
+                </div>
                 <div className="flex flex-row justify-center items-center mt-10">
                   <h1 className="font-light text-gray-500">Your Dice</h1>
                   <div className="ml-10">
@@ -141,7 +374,6 @@ export default function Play() {
                       sound={'/sounds/dice_roll.mp3'}
                       onRoll={(value) => {
                         setIndex((prevIndex) => prevIndex + value);
-                        setDiceNumber(value);
                       }}
                     />
                   </div>
