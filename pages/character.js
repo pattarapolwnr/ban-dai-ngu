@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import buttonClick from '../public/sounds/sfx/button.mp3';
+import chooseClick from '../public//sounds/sfx/choose.mp3';
 
 const righteous = Righteous({
   subsets: ['latin'],
@@ -16,6 +18,8 @@ const righteous = Righteous({
 });
 
 export default function SelectCharacter() {
+  const [playButtonSound] = useSound(buttonClick);
+  const [playChooseSound] = useSound(chooseClick);
   const router = useRouter();
   const mode = router.query.mode;
   const character_image = [
@@ -51,7 +55,7 @@ export default function SelectCharacter() {
         playStatus={Sound.status.PLAYING}
         loop
         playFromPosition={80}
-        volume={20}
+        volume={15}
       />
       <div className="flex items-center justify-center min-h-screen">
         <div
@@ -62,7 +66,12 @@ export default function SelectCharacter() {
           </h1>
           <div className="flex justify-center items-center mt-16">
             <div className="absolute top-80 left-80">
-              <button onClick={handleBack}>
+              <button
+                onClick={() => {
+                  handleBack();
+                  playChooseSound();
+                }}
+              >
                 <FontAwesomeIcon
                   icon={faCaretLeft}
                   style={{ fontSize: '96px', color: 'rgb(165 243 252)' }}
@@ -79,7 +88,12 @@ export default function SelectCharacter() {
               />
             </div>
             <div className="absolute top-80 right-80">
-              <button onClick={handleNext}>
+              <button
+                onClick={() => {
+                  handleNext();
+                  playChooseSound();
+                }}
+              >
                 <FontAwesomeIcon
                   icon={faCaretRight}
                   style={{ fontSize: '96px', color: 'rgb(165 243 252)' }}
@@ -88,11 +102,13 @@ export default function SelectCharacter() {
             </div>
           </div>
           <div className="flex justify-center items-center mt-20">
-            <Link
-              href={`/play?mode=${mode}&character=${index + 1}`}
-              className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
-            >
-              Select
+            <Link href={`/play?mode=${mode}&character=${index + 1}`}>
+              <button
+                className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
+                onClick={playButtonSound}
+              >
+                Select
+              </button>
             </Link>
           </div>
         </div>

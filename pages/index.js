@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMusic } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
+import buttonClick from '../public/sounds/sfx/button.mp3';
 
 const righteous = Righteous({
   subsets: ['latin'],
@@ -16,6 +17,7 @@ const righteous = Righteous({
 
 export default function Home() {
   const [isSound, setIsSound] = useState(Sound.status.STOPPED);
+  const [playButtonSound] = useSound(buttonClick);
   return (
     <>
       <Head>
@@ -44,11 +46,13 @@ export default function Home() {
             Ban Dai Ngu
           </h1>
           <div className="flex justify-center items-center mt-28">
-            <Link
-              href={'/level'}
-              className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl animate__animated animate__heartBeat animate__infinite hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
-            >
-              Start Game
+            <Link href={'/level'}>
+              <button
+                className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl animate__animated animate__heartBeat animate__infinite hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
+                onClick={playButtonSound}
+              >
+                Start game
+              </button>
             </Link>
           </div>
         </div>

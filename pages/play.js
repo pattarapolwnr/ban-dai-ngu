@@ -14,7 +14,15 @@ import Dice from 'react-dice-roll';
 import check_landing from '@/utils/check_landing';
 import { Button, Modal } from 'flowbite-react';
 import WheelComponent from 'react-wheel-of-prizes';
-// import 'react-wheel-of-prizes/dist/index.css';
+import footstep from '../public/sounds/sfx/footstep.mp3';
+import spin from '../public/sounds/sfx/spin.mp3';
+import player_attack from '../public/sounds/sfx/player_attack.mp3';
+import monster_attack from '../public/sounds/sfx/monster_attack.mp3';
+import reduce_heart from '../public/sounds/sfx/reduce_heart.mp3';
+import receive_card from '../public/sounds/sfx/receive_card.mp3';
+import win from '../public/sounds/sfx/win.mp3';
+import lose from '../public/sounds/sfx/lose.mp3';
+import heal from '../public/sounds/sfx/heal.mp3';
 
 const righteous = Righteous({
   subsets: ['latin'],
@@ -25,18 +33,28 @@ export default function Play() {
   const router = useRouter();
   const mode = router.query.mode;
   const [maxHP, setMaxHP] = useState(7);
+  const [maxMonsterHP, setMaxMonsterHP] = useState(1);
   const [HP, setHP] = useState(3);
+  const [monsterHP, setMonsterHP] = useState(1);
   const [HP_Bar, setHP_Bar] = useState([]);
+  const [monsterHP_Bar, setMonsterHP_Bar] = useState([]);
   const character = router.query.character;
   const [cardPocket, setCardPocket] = useState([]);
   const [landingEffect, setLandingEffect] = useState('');
 
-  // Display Enemy Dice state
-  const [isEnemyDice, setIsEnemyDice] = useState(false);
+  //sound
+  const [playFootstep] = useSound(footstep);
+  const [playSpin] = useSound(spin);
+  const [playPlayerAttack] = useSound(player_attack);
+  const [playMonsterAttack] = useSound(monster_attack);
+  const [playReduceHeart] = useSound(reduce_heart);
+  const [playReceiveCard] = useSound(receive_card);
+  const [playHeal] = useSound(heal);
+  const [playWin] = useSound(win);
+  const [playLose] = useSound(lose);
 
   //Character Position
   const [index, setIndex] = useState(1);
-  const [diceNumber, setDiceNumber] = useState(1);
   const [position, setPosition] = useState({ top: 610, left: 120 });
 
   //Modal State
@@ -48,6 +66,10 @@ export default function Play() {
 
   //use Angel Card
   const [isUseAngelCard, setIsUseAngelCard] = useState(false);
+
+  //Battle state
+  const [playerDiceNumber, setPlayerDiceNumber] = useState(0);
+  const [monsterDiceNumber, setMonsterDiceNumber] = useState(0);
 
   //Spinning wheel
   const segColors = [
@@ -82,6 +104,7 @@ export default function Play() {
 
   const displayCardEffect = (effect) => {
     if (effect === 'Increase HP 1 Point') {
+      playHeal();
       // Check HP is full?
       if (HP == maxHP) {
         return;
@@ -89,6 +112,7 @@ export default function Play() {
         setHP((prevHP) => prevHP + 1);
       }
     } else if (effect === 'Angel Card') {
+      playReceiveCard();
       // Check card Pocket is empty?
       if (cardPocket.length === 0) {
         const newCardPocket = [...cardPocket, 'Angel Card'];
@@ -97,6 +121,7 @@ export default function Play() {
         setCardPocket(['Angel Card']);
       }
     } else if (effect === 'Double Damage') {
+      playReceiveCard();
       // Check card Pocket is empty?
       if (cardPocket.length === 0) {
         const newCardPocket = [...cardPocket, 'Double Damage'];
@@ -107,6 +132,7 @@ export default function Play() {
     } else if (effect === 'Go Ahead 1 block') {
       setIndex((prevIndex) => prevIndex + 1);
     } else if (effect === 'Increase HP 2 Point') {
+      playHeal();
       // Check HP is full?
       if (HP == maxHP) {
         return;
@@ -117,8 +143,10 @@ export default function Play() {
       }
     } else if (effect === 'Go Ahead 3 blocks') {
       setIndex((prevIndex) => prevIndex + 3);
+      playFootstep();
     } else if (effect === 'Go Ahead 2 blocks') {
       setIndex((prevIndex) => prevIndex + 2);
+      playFootstep();
     }
     // else if (effect === 'Optional Card') {
     //   // Check card Pocket is empty?
@@ -129,6 +157,18 @@ export default function Play() {
     //     setCardPocket(['Optional Card']);
     //   }
     // }
+  };
+
+  // check is there a double damage card
+  const checkDoubleDamage = () => {
+    //Check is there a card in pocket?
+    if (cardPocket.length > 0) {
+      // Check is it a double damage card?
+      if (cardPocket[0] === 'Double Damage') {
+        return true;
+      }
+    }
+    return false;
   };
 
   const cards_onFinished = (winner) => {
@@ -176,10 +216,16 @@ export default function Play() {
       setTimeout(() => {
         setOpenTrapModal(true);
       }, 2000);
+      setTimeout(() => {
+        playSpin();
+      }, 4000);
     } else if (winner === 'Card') {
       setTimeout(() => {
         setOpenCardModal(true);
       }, 2000);
+      setTimeout(() => {
+        playSpin();
+      }, 4000);
     }
   };
 
@@ -202,23 +248,36 @@ export default function Play() {
 
   const displayTrapEffect = (effect) => {
     if (effect === 'Monster') {
-      setIsEnemyDice(true);
+      setOpenMonsterModal(true);
     } else if (effect === 'Restart') {
       setIndex(1);
     } else if (effect === 'Reduce 1 heart') {
       setHP((prevHP) => prevHP - 1);
+      setTimeout(() => {
+        playReduceHeart();
+      }, 500);
     } else if (effect === 'Reduce 2 heart') {
       setHP((prevHP) => prevHP - 2);
+      setTimeout(() => {
+        playReduceHeart();
+      }, 500);
     } else if (effect === 'Reduce 3 heart') {
       setHP((prevHP) => prevHP - 3);
+      setTimeout(() => {
+        playReduceHeart();
+      }, 500);
     } else if (effect === 'Walk back 1 block') {
       setIndex((prevIndex) => prevIndex - 1);
+      playFootstep();
     } else if (effect === 'Walk back 2 blocks') {
       setIndex((prevIndex) => prevIndex - 2);
+      playFootstep();
     } else if (effect === 'Walk back 3 blocks') {
       setIndex((prevIndex) => prevIndex - 3);
+      playFootstep();
     } else if (effect === 'Walk back 4 block') {
       setIndex((prevIndex) => prevIndex - 4);
+      playFootstep();
     }
   };
 
@@ -233,6 +292,62 @@ export default function Play() {
       displayTrapEffect(winner);
     }, 2000);
   };
+
+  //Dice number & Battle Handling
+  useEffect(() => {
+    //check there is a double damage card?
+    if (checkDoubleDamage()) {
+      if (playerDiceNumber > monsterDiceNumber) {
+        playPlayerAttack();
+        //Check Monster HP = 2?
+        if (monsterHP <= 2) {
+          alert('Player wins this battle');
+          setMonsterHP(maxMonsterHP);
+          setCardPocket([]);
+          setTimeout(() => {
+            setOpenMonsterModal(false);
+          }, 1000);
+          return;
+        } else {
+          alert('Player wins this turn');
+          setMonsterHP((prevHP) => prevHP - 2);
+          return;
+        }
+      } else if (playerDiceNumber < monsterDiceNumber) {
+        playMonsterAttack();
+        alert('Monster wins this turn');
+        setHP((prevHP) => prevHP - 1);
+        return;
+      } else {
+        //eaual Dice number
+        return;
+      }
+    } else {
+      // No Double Damage card
+      if (playerDiceNumber > monsterDiceNumber) {
+        playPlayerAttack();
+        //Check Monster HP = 1?
+        if (monsterHP === 1) {
+          alert('Player wins this battle');
+          setMonsterHP(maxMonsterHP);
+          setOpenMonsterModal(false);
+          return;
+        } else {
+          alert('Player wins this turn');
+          setMonsterHP((prevHP) => prevHP - 1);
+          return;
+        }
+      } else if (playerDiceNumber < monsterDiceNumber) {
+        playMonsterAttack();
+        alert('Monster wins this turn');
+        setHP((prevHP) => prevHP - 1);
+        return;
+      } else {
+        //eaual Dice number
+        return;
+      }
+    }
+  }, [playerDiceNumber, monsterDiceNumber]);
 
   // Initial HP
   useEffect(() => {
@@ -251,20 +366,45 @@ export default function Play() {
       }
       setHP_Bar(hp_bar);
     };
+    const generateMonsterHP_Bar = () => {
+      let hp_bar = [];
+      // generate HP Bar
+      for (let index = 0; index < monsterHP; index++) {
+        hp_bar.push(
+          <FontAwesomeIcon
+            icon={faHeart}
+            beat
+            style={{ fontSize: '32px', color: '#AFE1AF' }}
+            key={index}
+          />
+        );
+      }
+      setMonsterHP_Bar(hp_bar);
+    };
+
     if (mode === 'easy') {
       setMaxHP(7);
       setHP(7);
+      setMonsterHP(1);
+      setMaxMonsterHP(1);
       generateHP_Bar();
+      generateMonsterHP_Bar();
     } else if (mode === 'medium') {
       setMaxHP(5);
       setHP(5);
+      setMonsterHP(2);
+      setMaxMonsterHP(2);
       generateHP_Bar();
+      generateMonsterHP_Bar();
     } else {
       setMaxHP(3);
       setHP(3);
+      setMonsterHP(2);
+      setMaxMonsterHP(2);
       generateHP_Bar();
+      generateMonsterHP_Bar();
     }
-  }, [maxHP]);
+  }, [maxHP, maxMonsterHP]);
 
   // Change HP
   useEffect(() => {
@@ -283,16 +423,33 @@ export default function Play() {
       }
       setHP_Bar(hp_bar);
     };
+    const generateMonsterHP_Bar = () => {
+      let hp_bar = [];
+      // generate HP Bar
+      for (let index = 0; index < monsterHP; index++) {
+        hp_bar.push(
+          <FontAwesomeIcon
+            icon={faHeart}
+            beat
+            style={{ fontSize: '32px', color: '#AFE1AF' }}
+            key={index}
+          />
+        );
+      }
+      setMonsterHP_Bar(hp_bar);
+    };
     generateHP_Bar();
+    generateMonsterHP_Bar();
     if (HP == 0) {
+      playLose();
       setTimeout(() => {
         alert('Game Over !');
-      }, 2000);
+      }, 1000);
       setTimeout(() => {
         router.push('/gameover');
       }, 2000);
     }
-  }, [HP]);
+  }, [HP, monsterHP]);
 
   // Change Character Position
   useEffect(() => {
@@ -356,11 +513,13 @@ export default function Play() {
         setTimeout(() => {
           alert('Congratulations! You win the game');
         }, 1000);
+        playWin();
         setTimeout(() => {
           router.push('/');
         }, 3000);
       }
     };
+    playFootstep();
     changePositionFromDice();
   }, [index]);
 
@@ -370,6 +529,9 @@ export default function Play() {
       setTimeout(() => {
         setOpenCardModal(true);
       }, 1000);
+      setTimeout(() => {
+        playSpin();
+      }, 2000);
       setLandingEffect('');
       return;
     } else if (landingEffect === 'traps') {
@@ -388,12 +550,18 @@ export default function Play() {
       setTimeout(() => {
         setOpenTrapModal(true);
       }, 1000);
+      setTimeout(() => {
+        playSpin();
+      }, 2000);
       setLandingEffect('');
       return;
     } else if (landingEffect === 'mystery') {
       setTimeout(() => {
         setOpenMysteryModal(true);
       }, 1000);
+      setTimeout(() => {
+        playSpin();
+      }, 2000);
       setLandingEffect('');
       return;
     } else {
@@ -428,20 +596,23 @@ export default function Play() {
         <title>BanDaiNgu Board Game</title>
       </Head>
       <Sound
-        url="/sounds/scene2.mp3"
+        url="/sounds/gameplay.mp3"
         playStatus={Sound.status.PLAYING}
         loop
-        volume={20}
+        volume={15}
+        playFromPosition={45}
       />
       {/* Card Modal */}
-      <Modal show={openCardModal} size={'2xl'}>
+      <Modal show={openCardModal} size={'2xl'} popup>
         <Modal.Header>Card Spinning Wheel</Modal.Header>
         <Modal.Body className="overflow-hidden">
           <div className="max-w-xl">
             <WheelComponent
               segments={shuffle(cards_segments)}
               segColors={segColors}
-              onFinished={(winner) => cards_onFinished(winner)}
+              onFinished={(winner) => {
+                cards_onFinished(winner);
+              }}
               primaryColor="black"
               contrastColor="white"
               buttonText="Spin"
@@ -456,7 +627,7 @@ export default function Play() {
       </Modal>
 
       {/* Trap Modal */}
-      <Modal show={openTrapModal} onClose={() => setOpenTrapModal(false)}>
+      <Modal show={openTrapModal} popup>
         <Modal.Header>Trap Spinning Wheel</Modal.Header>
         <Modal.Body className="overflow-hidden">
           <div className="max-w-xl">
@@ -478,7 +649,7 @@ export default function Play() {
       </Modal>
 
       {/* Mystery Modal */}
-      <Modal show={openMysteryModal} onClose={() => setOpenMysteryModal(false)}>
+      <Modal show={openMysteryModal} popup>
         <Modal.Header>Mystery Spinning Wheel</Modal.Header>
         <Modal.Body className="overflow-hidden">
           <div className="max-w-xl">
@@ -514,6 +685,62 @@ export default function Play() {
               <Button color="gray" onClick={() => setOpenAngelCard(false)}>
                 No, cancel
               </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      {/* Battle with Monster Modal */}
+      <Modal show={openMonsterModal} size="4xl" popup>
+        <Modal.Header />
+        <Modal.Body>
+          <Sound
+            url="/sounds/battle.mp3"
+            playStatus={Sound.status.PLAYING}
+            loop
+            volume={35}
+          />
+          <div className="flex flex-col justify-center items-center">
+            {/* Title */}
+            <h1>
+              <span className="text-xl font-semibold">
+                Battle with monster!
+              </span>{' '}
+              <span className="font-light">(Press enter to roll dice)</span>
+            </h1>
+            {/* Body */}
+            <div className="flex flex-row justify-center items-center my-10">
+              {/* Player */}
+              <div className="flex flex-col justify-center items-center w-80">
+                <h1>Player</h1>
+                <div className="grid grid-cols-3 gap-3 my-4 h-28">{HP_Bar}</div>
+                <div className="flex justify-center items-center my-10">
+                  <Dice
+                    size={150}
+                    sound={'/sounds/dice_roll.mp3'}
+                    onRoll={(value) =>
+                      setTimeout(() => setPlayerDiceNumber(value), 700)
+                    }
+                    triggers={['Enter']}
+                  />
+                </div>
+              </div>
+              {/* Monster */}
+              <div className="flex flex-col justify-center items-center w-80">
+                <h1>Monster</h1>
+                <div className="grid grid-cols-3 gap-3 my-4 h-28">
+                  {monsterHP_Bar}
+                </div>
+                <div className="flex justify-center items-center my-10">
+                  <Dice
+                    size={150}
+                    onRoll={(value) =>
+                      setTimeout(() => setMonsterDiceNumber(value), 700)
+                    }
+                    triggers={['Enter']}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </Modal.Body>

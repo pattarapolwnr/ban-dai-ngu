@@ -5,6 +5,7 @@ import 'animate.css';
 import useSound from 'use-sound';
 import Sound from 'react-sound';
 import Link from 'next/link';
+import buttonClick from '../public/sounds/sfx/button.mp3';
 
 const righteous = Righteous({
   subsets: ['latin'],
@@ -12,7 +13,7 @@ const righteous = Righteous({
 });
 
 export default function SelectLevel() {
-  // const [play] = useSound(boopSfx);
+  const [playButtonSound] = useSound(buttonClick);
   return (
     <>
       <Head>
@@ -32,23 +33,29 @@ export default function SelectLevel() {
             Select the difficulty level
           </h1>
           <div className="flex flex-col space-y-16 justify-center items-center mt-20">
-            <Link
-              href={'/character?mode=easy'}
-              className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
-            >
-              Easy
+            <Link href={'/character?mode=easy'}>
+              <button
+                className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
+                onClick={playButtonSound}
+              >
+                Easy
+              </button>
             </Link>
-            <Link
-              href={'/character?mode=medium'}
-              className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
-            >
-              Medium
+            <Link href={'/character?mode=medium'}>
+              <button
+                className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
+                onClick={playButtonSound}
+              >
+                Medium
+              </button>
             </Link>
-            <Link
-              href={'/character?mode=hard'}
-              className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
-            >
-              Hard
+            <Link href={'/character?mode=hard'}>
+              <button
+                className={`${righteous.className} text-center text-white px-6 py-4 bg-cyan-400 text-3xl w-60 rounded-2xl hover:bg-transparent border-2 border-cyan-400 hover:text-cyan-400 ease-in-out delay-75`}
+                onClick={playButtonSound}
+              >
+                Hard
+              </button>
             </Link>
           </div>
         </div>
