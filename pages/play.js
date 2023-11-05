@@ -276,7 +276,7 @@ export default function Play() {
     } else if (effect === 'Walk back 3 blocks') {
       setIndex((prevIndex) => prevIndex - 3);
       playFootstep();
-    } else if (effect === 'Walk back 4 block') {
+    } else if (effect === 'Walk back 4 blocks') {
       setIndex((prevIndex) => prevIndex - 4);
       playFootstep();
     }
@@ -441,11 +441,12 @@ export default function Play() {
     };
     generateHP_Bar();
     generateMonsterHP_Bar();
-    if (HP == 0) {
+    if (HP === 0) {
       playLose();
+      setOpenMonsterModal(false);
       setTimeout(() => {
         alert('Game Over !');
-      }, 1000);
+      }, 750);
       setTimeout(() => {
         router.push('/gameover');
       }, 2000);
