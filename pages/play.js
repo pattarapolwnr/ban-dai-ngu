@@ -441,7 +441,7 @@ export default function Play() {
     };
     generateHP_Bar();
     generateMonsterHP_Bar();
-    if (HP === 0) {
+    if (HP <= 0) {
       playLose();
       setOpenMonsterModal(false);
       setTimeout(() => {
