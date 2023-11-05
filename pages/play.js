@@ -139,6 +139,7 @@ export default function Play() {
       } else if (HP + 2 <= maxHP) {
         setHP((prevHP) => prevHP + 2);
       } else {
+        setHP(maxHP);
         return;
       }
     } else if (effect === 'Go Ahead 3 blocks') {
