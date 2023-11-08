@@ -530,7 +530,7 @@ export default function Play() {
     if (landingEffect === 'cards') {
       setTimeout(() => {
         setOpenCardModal(true);
-      }, 1000);
+      }, 500);
       setTimeout(() => {
         playSpin();
       }, 2000);
@@ -541,7 +541,7 @@ export default function Play() {
         if (cardPocket[0] === 'Angel Card') {
           setTimeout(() => {
             setOpenAngelCard(true);
-          }, 1000);
+          }, 500);
 
           if (isUseAngelCard) {
             setLandingEffect('');
@@ -551,7 +551,7 @@ export default function Play() {
       }
       setTimeout(() => {
         setOpenTrapModal(true);
-      }, 1000);
+      }, 500);
       setTimeout(() => {
         playSpin();
       }, 2000);
@@ -560,7 +560,7 @@ export default function Play() {
     } else if (landingEffect === 'mystery') {
       setTimeout(() => {
         setOpenMysteryModal(true);
-      }, 1000);
+      }, 500);
       setTimeout(() => {
         playSpin();
       }, 2000);
@@ -702,7 +702,7 @@ export default function Play() {
             loop
             volume={35}
           />
-          <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center text-gray-800 dark:text-gray-300">
             {/* Title */}
             <h1>
               <span className="text-xl font-semibold">
