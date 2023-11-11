@@ -9,9 +9,9 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
-import Board from '@/components/board';
+import Board, { HardBoard } from '@/components/hard_board';
 import Dice from 'react-dice-roll';
-import check_landing from '@/utils/check_landing';
+import check_landing, { check_isTeleport } from '@/utils/check_landing';
 import { Button, Modal } from 'flowbite-react';
 import WheelComponent from 'react-wheel-of-prizes';
 import footstep from '../public/sounds/sfx/footstep.mp3';
@@ -23,6 +23,9 @@ import receive_card from '../public/sounds/sfx/receive_card.mp3';
 import win from '../public/sounds/sfx/win.mp3';
 import lose from '../public/sounds/sfx/lose.mp3';
 import heal from '../public/sounds/sfx/heal.mp3';
+import { EasyBoard } from '@/components/easy_board';
+import MediumBoard from '@/components/medium_board';
+import warp from '../public/sounds/sfx/warp.mp3';
 
 const righteous = Righteous({
   subsets: ['latin'],
@@ -41,6 +44,7 @@ export default function Play() {
   const character = router.query.character;
   const [cardPocket, setCardPocket] = useState([]);
   const [landingEffect, setLandingEffect] = useState('');
+  const [teleportTo, setTeleportTo] = useState(0);
 
   //sound
   const [playFootstep] = useSound(footstep);
@@ -63,6 +67,7 @@ export default function Play() {
   const [openMysteryModal, setOpenMysteryModal] = useState(false);
   const [openAngelCard, setOpenAngelCard] = useState(false);
   const [openMonsterModal, setOpenMonsterModal] = useState(false);
+  const [openTeleportModal, setOpenTeleportModal] = useState(false);
 
   //use Angel Card
   const [isUseAngelCard, setIsUseAngelCard] = useState(false);
@@ -70,6 +75,9 @@ export default function Play() {
   //Battle state
   const [playerDiceNumber, setPlayerDiceNumber] = useState(0);
   const [monsterDiceNumber, setMonsterDiceNumber] = useState(0);
+
+  //sound
+  const [playWarpSound] = useSound(warp);
 
   //Spinning wheel
   const segColors = [
@@ -95,10 +103,10 @@ export default function Play() {
     'Increase HP 1 Point',
     'Angel Card',
     'Double Damage',
-    'Go Ahead 1 block',
+    // 'Go Ahead 1 block',
     'Increase HP 2 Point',
-    'Go Ahead 3 blocks',
-    'Go Ahead 2 blocks',
+    // 'Go Ahead 3 blocks',
+    // 'Go Ahead 2 blocks',
     'Increase HP 1 Point',
   ];
 
@@ -129,8 +137,8 @@ export default function Play() {
       } else {
         setCardPocket(['Double Damage']);
       }
-    } else if (effect === 'Go Ahead 1 block') {
-      setIndex((prevIndex) => prevIndex + 1);
+      // } else if (effect === 'Go Ahead 1 block') {
+      //   setIndex((prevIndex) => prevIndex + 1);
     } else if (effect === 'Increase HP 2 Point') {
       playHeal();
       // Check HP is full?
@@ -142,22 +150,13 @@ export default function Play() {
         setHP(maxHP);
         return;
       }
-    } else if (effect === 'Go Ahead 3 blocks') {
-      setIndex((prevIndex) => prevIndex + 3);
-      playFootstep();
-    } else if (effect === 'Go Ahead 2 blocks') {
-      setIndex((prevIndex) => prevIndex + 2);
-      playFootstep();
+      // } else if (effect === 'Go Ahead 3 blocks') {
+      //   setIndex((prevIndex) => prevIndex + 3);
+      //   playFootstep();
+      // } else if (effect === 'Go Ahead 2 blocks') {
+      //   setIndex((prevIndex) => prevIndex + 2);
+      //   playFootstep();
     }
-    // else if (effect === 'Optional Card') {
-    //   // Check card Pocket is empty?
-    //   if (cardPocket.length === 0) {
-    //     const newCardPocket = [...cardPocket, 'Optional Card'];
-    //     setCardPocket(newCardPocket);
-    //   } else {
-    //     setCardPocket(['Optional Card']);
-    //   }
-    // }
   };
 
   // check is there a double damage card
@@ -232,25 +231,20 @@ export default function Play() {
 
   //Traps
   const traps_segments = [
-    'Monster',
     'Reduce 1 heart',
     'Restart',
     'Walk back 1 block',
-    'Monster',
     'Reduce 2 heart',
     'Walk back 2 blocks',
-    'Monster',
     'Reduce 3 heart',
     'Walk back 3 blocks',
-    'Monster',
     'Walk back 4 blocks',
     'Reduce 1 heart',
   ];
 
   const displayTrapEffect = (effect) => {
-    if (effect === 'Monster') {
-      setOpenMonsterModal(true);
-    } else if (effect === 'Restart') {
+    const teleport = check_isTeleport(index, mode);
+    if (effect === 'Restart') {
       setIndex(1);
     } else if (effect === 'Reduce 1 heart') {
       setHP((prevHP) => prevHP - 1);
@@ -280,6 +274,9 @@ export default function Play() {
       setIndex((prevIndex) => prevIndex - 4);
       playFootstep();
     }
+    if (teleport.isTeleport) {
+      setOpenTeleportModal(true);
+    }
   };
 
   const traps_onFinished = (winner) => {
@@ -294,6 +291,20 @@ export default function Play() {
     }, 2000);
   };
 
+  //handle warp
+  const handleWarp = () => {
+    const teleport = check_isTeleport(index, mode);
+    const { isTeleport, teleport_to } = teleport;
+    if (isTeleport) {
+      setOpenTeleportModal(false);
+      setIndex(teleport_to);
+      playWarpSound();
+    }
+    return;
+  };
+
+  //toggle warp
+
   //Dice number & Battle Handling
   useEffect(() => {
     //check there is a double damage card?
@@ -302,11 +313,15 @@ export default function Play() {
         playPlayerAttack();
         //Check Monster HP = 2?
         if (monsterHP <= 2) {
+          const teleport = check_isTeleport(index, mode);
           alert('Player wins this battle');
           setMonsterHP(maxMonsterHP);
           setCardPocket([]);
           setTimeout(() => {
             setOpenMonsterModal(false);
+            if (teleport.isTeleport) {
+              setOpenTeleportModal(true);
+            }
           }, 1000);
           return;
         } else {
@@ -329,9 +344,16 @@ export default function Play() {
         playPlayerAttack();
         //Check Monster HP = 1?
         if (monsterHP === 1) {
+          const teleport = check_isTeleport(index, mode);
           alert('Player wins this battle');
           setMonsterHP(maxMonsterHP);
-          setOpenMonsterModal(false);
+          setCardPocket([]);
+          setTimeout(() => {
+            setOpenMonsterModal(false);
+            if (teleport.isTeleport) {
+              setOpenTeleportModal(true);
+            }
+          }, 1000);
           return;
         } else {
           alert('Player wins this turn');
@@ -460,54 +482,54 @@ export default function Play() {
         const start = 1;
         const left = 120 + (index - start) * 72;
         setPosition({ top: 610, left: left });
-        setLandingEffect(check_landing(index));
+        setLandingEffect(check_landing(index, mode));
         return;
       } else if (index === 12) {
         setPosition({ top: 510, left: 840 });
-        setLandingEffect(check_landing(index));
+        setLandingEffect(check_landing(index, mode));
         return;
       } else if (index > 12 && index <= 24) {
         let start = 13;
         if (index === 13) {
           setPosition({ top: 410, left: 840 });
-          setLandingEffect(check_landing(index));
+          setLandingEffect(check_landing(index, mode));
           return;
         } else {
           const left = 840 - (index - start) * 72;
           setPosition({ top: 410, left: left });
-          setLandingEffect(check_landing(index));
+          setLandingEffect(check_landing(index, mode));
           return;
         }
       } else if (index === 25) {
         setPosition({ top: 310, left: 48 });
-        setLandingEffect(check_landing(index));
+        setLandingEffect(check_landing(index, mode));
         return;
       } else if (index > 25 && index <= 37) {
         let start = 26;
         if (index === 26) {
           setPosition({ top: 210, left: 48 });
-          setLandingEffect(check_landing(index));
+          setLandingEffect(check_landing(index, mode));
           return;
         } else {
           const left = 48 + (index - start) * 72;
           setPosition({ top: 210, left: left });
-          setLandingEffect(check_landing(index));
+          setLandingEffect(check_landing(index, mode));
           return;
         }
       } else if (index === 38) {
         setPosition({ top: 110, left: 840 });
-        setLandingEffect(check_landing(index));
+        setLandingEffect(check_landing(index, mode));
         return;
       } else if (index > 38 && index <= 49) {
         let start = 39;
         if (index === 39) {
           setPosition({ top: 40, left: 840 });
-          setLandingEffect(check_landing(index));
+          setLandingEffect(check_landing(index, mode));
           return;
         } else {
           const left = 840 - (index - start) * 72;
           setPosition({ top: 40, left: left });
-          setLandingEffect(check_landing(index));
+          setLandingEffect(check_landing(index, mode));
           return;
         }
       } else {
@@ -545,6 +567,7 @@ export default function Play() {
 
           if (isUseAngelCard) {
             setLandingEffect('');
+            setIsUseAngelCard(false);
             return;
           }
         }
@@ -566,10 +589,24 @@ export default function Play() {
       }, 2000);
       setLandingEffect('');
       return;
-    } else {
+    } else if (landingEffect === 'monster') {
+      setTimeout(() => {
+        setOpenMonsterModal(true);
+      }, 500);
+      setLandingEffect('');
+      return;
+    } else if (landingEffect === 'empty') {
+      const teleport = check_isTeleport(index, mode);
+      if (teleport.isTeleport) {
+        setTeleportTo(teleport.teleport_to);
+        setTimeout(() => {
+          setOpenTeleportModal(true);
+        }, 500);
+      }
+      setLandingEffect('');
       return;
     }
-  }, [landingEffect]);
+  }, [landingEffect, teleportTo]);
 
   // Shuffle array function
   function shuffle(array) {
@@ -692,6 +729,31 @@ export default function Play() {
         </Modal.Body>
       </Modal>
 
+      {/* Teleport Modal */}
+      <Modal show={openTeleportModal} size="md" popup>
+        <Modal.Header />
+        <Modal.Body>
+          <div className="text-center">
+            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+              Do you want to teleport?
+            </h3>
+            <div className="flex justify-center gap-4">
+              <Button
+                color="success"
+                onClick={() => {
+                  handleWarp();
+                }}
+              >
+                Yes
+              </Button>
+              <Button color="gray" onClick={() => setOpenTeleportModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
       {/* Battle with Monster Modal */}
       <Modal show={openMonsterModal} size="4xl" popup>
         <Modal.Header />
@@ -782,7 +844,14 @@ export default function Play() {
 
             {/* Board */}
             <div className="relative flex w-3/4 text-gray-950">
-              <Board />
+              {mode === 'easy' ? <EasyBoard /> : <div className="hidden"></div>}
+              {mode === 'medium' ? (
+                <MediumBoard />
+              ) : (
+                <div className="hidden"></div>
+              )}
+              {mode === 'hard' ? <HardBoard /> : <div className="hidden"></div>}
+
               <div
                 className={`rounded-full w-12 h-12 absolute animate__animated animate__bounce animate_slower animate__infinite`}
                 style={{ top: `${position.top}px`, left: `${position.left}px` }}
