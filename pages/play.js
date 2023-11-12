@@ -216,9 +216,11 @@ export default function Play() {
       setTimeout(() => {
         setOpenTrapModal(true);
       }, 2000);
-      setTimeout(() => {
-        playSpin();
-      }, 4000);
+      if (!isUseAngelCard) {
+        setTimeout(() => {
+          playSpin();
+        }, 4000);
+      }
     } else if (winner === 'Card') {
       setTimeout(() => {
         setOpenCardModal(true);
@@ -303,71 +305,84 @@ export default function Play() {
     return;
   };
 
-  //toggle warp
+  //Reset battle dice
+  const resetBattleDices = () => {
+    setPlayerDiceNumber(0);
+    setMonsterDiceNumber(0);
+  };
 
   //Dice number & Battle Handling
   useEffect(() => {
-    //check there is a double damage card?
-    if (checkDoubleDamage()) {
-      if (playerDiceNumber > monsterDiceNumber) {
-        playPlayerAttack();
-        //Check Monster HP = 2?
-        if (monsterHP <= 2) {
-          const teleport = check_isTeleport(index, mode);
-          alert('Player wins this battle');
-          setMonsterHP(maxMonsterHP);
-          setCardPocket([]);
-          setTimeout(() => {
-            setOpenMonsterModal(false);
-            if (teleport.isTeleport) {
-              setOpenTeleportModal(true);
-            }
-          }, 1000);
+    if (playerDiceNumber > 0 && monsterDiceNumber > 0) {
+      //check there is a double damage card?
+      if (checkDoubleDamage()) {
+        if (playerDiceNumber > monsterDiceNumber) {
+          playPlayerAttack();
+          //Check Monster HP = 2?
+          if (monsterHP <= 2) {
+            const teleport = check_isTeleport(index, mode);
+            alert('Player wins this battle');
+            setMonsterHP(maxMonsterHP);
+            setCardPocket([]);
+            setTimeout(() => {
+              setOpenMonsterModal(false);
+              if (teleport.isTeleport) {
+                setOpenTeleportModal(true);
+              }
+            }, 1000);
+            resetBattleDices();
+            return;
+          } else {
+            alert('Player wins this turn');
+            setMonsterHP((prevHP) => prevHP - 2);
+            resetBattleDices();
+            return;
+          }
+        } else if (playerDiceNumber < monsterDiceNumber) {
+          playMonsterAttack();
+          alert('Monster wins this turn');
+          setHP((prevHP) => prevHP - 1);
+          resetBattleDices();
           return;
         } else {
-          alert('Player wins this turn');
-          setMonsterHP((prevHP) => prevHP - 2);
+          //eaual Dice number
           return;
         }
-      } else if (playerDiceNumber < monsterDiceNumber) {
-        playMonsterAttack();
-        alert('Monster wins this turn');
-        setHP((prevHP) => prevHP - 1);
-        return;
       } else {
-        //eaual Dice number
-        return;
-      }
-    } else {
-      // No Double Damage card
-      if (playerDiceNumber > monsterDiceNumber) {
-        playPlayerAttack();
-        //Check Monster HP = 1?
-        if (monsterHP === 1) {
-          const teleport = check_isTeleport(index, mode);
-          alert('Player wins this battle');
-          setMonsterHP(maxMonsterHP);
-          setCardPocket([]);
-          setTimeout(() => {
-            setOpenMonsterModal(false);
-            if (teleport.isTeleport) {
-              setOpenTeleportModal(true);
-            }
-          }, 1000);
+        // No Double Damage card
+        if (playerDiceNumber > monsterDiceNumber) {
+          playPlayerAttack();
+          //Check Monster HP = 1?
+          if (monsterHP === 1) {
+            const teleport = check_isTeleport(index, mode);
+            alert('Player wins this battle');
+            setCardPocket([]);
+            setTimeout(() => {
+              setMonsterHP(maxMonsterHP);
+              setOpenMonsterModal(false);
+              if (teleport.isTeleport) {
+                setOpenTeleportModal(true);
+              }
+            }, 500);
+            resetBattleDices();
+            return;
+          } else {
+            alert('Player wins this turn');
+            setMonsterHP((prevHP) => prevHP - 1);
+            resetBattleDices();
+            return;
+          }
+        } else if (playerDiceNumber < monsterDiceNumber) {
+          playMonsterAttack();
+          alert('Monster wins this turn');
+          setHP((prevHP) => prevHP - 1);
+          resetBattleDices();
           return;
         } else {
-          alert('Player wins this turn');
-          setMonsterHP((prevHP) => prevHP - 1);
+          //eaual Dice number
+          resetBattleDices();
           return;
         }
-      } else if (playerDiceNumber < monsterDiceNumber) {
-        playMonsterAttack();
-        alert('Monster wins this turn');
-        setHP((prevHP) => prevHP - 1);
-        return;
-      } else {
-        //eaual Dice number
-        return;
       }
     }
   }, [playerDiceNumber, monsterDiceNumber]);
