@@ -337,7 +337,7 @@ export default function Play() {
             alert('Player wins this battle');
             setPlayerAnimation('player_attack');
             playPlayerSlash();
-            setTimeout(() => playPlayerSlash(), 100);
+            setTimeout(() => playPlayerSlash(), 300);
             setMonsterHP(maxMonsterHP);
             setCardPocket([]);
             setTimeout(() => {
@@ -354,7 +354,7 @@ export default function Play() {
             alert('Player wins this turn');
             setPlayerAnimation('player_attack');
             playPlayerSlash();
-            setTimeout(() => playPlayerSlash(), 100);
+            setTimeout(() => playPlayerSlash(), 300);
             setMonsterHP((prevHP) => prevHP - 2);
             resetBattleDices();
             setTimeout(() => setPlayerAnimation('player_idle'), 500);
@@ -626,6 +626,15 @@ export default function Play() {
           if (isUseAngelCard) {
             setLandingEffect('');
             setIsUseAngelCard(false);
+            return;
+          } else {
+            setTimeout(() => {
+              setOpenTrapModal(true);
+            }, 500);
+            setTimeout(() => {
+              playSpin();
+            }, 2000);
+            setLandingEffect('');
             return;
           }
         }
