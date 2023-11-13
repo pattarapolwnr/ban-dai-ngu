@@ -627,13 +627,10 @@ export default function Play() {
             setLandingEffect('');
             setIsUseAngelCard(false);
             return;
-          } else {
+          } else if (!isUseAngelCard) {
             setTimeout(() => {
               setOpenTrapModal(true);
             }, 500);
-            setTimeout(() => {
-              playSpin();
-            }, 2000);
             setLandingEffect('');
             return;
           }
