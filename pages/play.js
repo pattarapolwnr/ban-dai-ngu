@@ -336,8 +336,8 @@ export default function Play() {
             const teleport = check_isTeleport(index, mode);
             alert('Player wins this battle');
             setPlayerAnimation('player_attack');
-            setTimeout(() => setPlayerAnimation('player_attack'), 100);
             playPlayerSlash();
+            setTimeout(() => playPlayerSlash(), 100);
             setMonsterHP(maxMonsterHP);
             setCardPocket([]);
             setTimeout(() => {
@@ -353,8 +353,8 @@ export default function Play() {
           } else {
             alert('Player wins this turn');
             setPlayerAnimation('player_attack');
-            setTimeout(() => setPlayerAnimation('player_attack'), 100);
             playPlayerSlash();
+            setTimeout(() => playPlayerSlash(), 100);
             setMonsterHP((prevHP) => prevHP - 2);
             resetBattleDices();
             setTimeout(() => setPlayerAnimation('player_idle'), 500);
