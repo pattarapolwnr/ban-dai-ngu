@@ -29,6 +29,7 @@ import warp from '../public/sounds/sfx/warp.mp3';
 import decision from '../public/sounds/sfx/decide.mp3';
 import player_slash from '../public/sounds/sfx/player_slash.mp3';
 import monster_slash from '../public/sounds/sfx/monster_slash.mp3';
+import block from '../public/sounds/sfx/block.mp3';
 import { SpriteAnimator } from 'react-sprite-animator';
 
 const righteous = Righteous({
@@ -64,6 +65,7 @@ export default function Play() {
   const [playDecision] = useSound(decision);
   const [playPlayerSlash] = useSound(player_slash);
   const [playMonsterSlash] = useSound(monster_slash);
+  const [playBlock] = useSound(block);
 
   //Character Position
   const [index, setIndex] = useState(1);
@@ -196,6 +198,7 @@ export default function Play() {
   const useAngelCard = () => {
     setTimeout(() => {
       setOpenAngelCard(false);
+      playBlock();
       setIsUseAngelCard(true);
       setOpenTrapModal(false);
       setCardPocket([]);
@@ -333,6 +336,7 @@ export default function Play() {
             const teleport = check_isTeleport(index, mode);
             alert('Player wins this battle');
             setPlayerAnimation('player_attack');
+            setPlayerAnimation('player_attack');
             playPlayerSlash();
             setMonsterHP(maxMonsterHP);
             setCardPocket([]);
@@ -348,6 +352,7 @@ export default function Play() {
             return;
           } else {
             alert('Player wins this turn');
+            setPlayerAnimation('player_attack');
             setPlayerAnimation('player_attack');
             playPlayerSlash();
             setMonsterHP((prevHP) => prevHP - 2);
@@ -532,8 +537,8 @@ export default function Play() {
     const changePositionFromDice = () => {
       if (index <= 11) {
         const start = 1;
-        const left = 120 + (index - start) * 72;
-        setPosition({ top: 610, left: left });
+        const left = 104 + (index - start) * 72;
+        setPosition({ top: 550, left: left });
         setLandingEffect(check_landing(index, mode));
         return;
       } else if (index === 12) {
@@ -543,49 +548,49 @@ export default function Play() {
       } else if (index > 12 && index <= 24) {
         let start = 13;
         if (index === 13) {
-          setPosition({ top: 410, left: 840 });
+          setPosition({ top: 335, left: 830 });
           setLandingEffect(check_landing(index, mode));
           return;
         } else {
-          const left = 840 - (index - start) * 72;
-          setPosition({ top: 410, left: left });
+          const left = 830 - (index - start) * 72;
+          setPosition({ top: 335, left: left });
           setLandingEffect(check_landing(index, mode));
           return;
         }
       } else if (index === 25) {
-        setPosition({ top: 310, left: 48 });
+        setPosition({ top: 238, left: 30 });
         setLandingEffect(check_landing(index, mode));
         return;
       } else if (index > 25 && index <= 37) {
         let start = 26;
         if (index === 26) {
-          setPosition({ top: 210, left: 48 });
+          setPosition({ top: 130, left: 30 });
           setLandingEffect(check_landing(index, mode));
           return;
         } else {
-          const left = 48 + (index - start) * 72;
-          setPosition({ top: 210, left: left });
+          const left = 30 + (index - start) * 72;
+          setPosition({ top: 130, left: left });
           setLandingEffect(check_landing(index, mode));
           return;
         }
       } else if (index === 38) {
-        setPosition({ top: 110, left: 840 });
+        setPosition({ top: 30, left: 830 });
         setLandingEffect(check_landing(index, mode));
         return;
       } else if (index > 38 && index <= 49) {
         let start = 39;
         if (index === 39) {
-          setPosition({ top: 40, left: 840 });
+          setPosition({ top: 0, left: 830 });
           setLandingEffect(check_landing(index, mode));
           return;
         } else {
-          const left = 840 - (index - start) * 72;
-          setPosition({ top: 40, left: left });
+          const left = 830 - (index - start) * 72;
+          setPosition({ top: 0, left: left });
           setLandingEffect(check_landing(index, mode));
           return;
         }
       } else {
-        setPosition({ top: 40, left: 48 });
+        setPosition({ top: 0, left: 30 });
         setTimeout(() => {
           alert('Congratulations! You win the game');
         }, 1000);
@@ -927,10 +932,26 @@ export default function Play() {
                   <h1 className="text-white">Your HP</h1>
                   <div className="grid grid-cols-3 gap-4">{HP_Bar}</div>
                 </div>
-                <div className="flex justify-start items-center">
-                  <h1 className="text-white">
-                    Card Pocket: {cardPocket ? cardPocket[0] : ''}
-                  </h1>
+                <div className="flex justify-start items-center space-x-4">
+                  <h1 className="text-white">Card Pocket:</h1>
+                  {cardPocket[0] === 'Double Damage' ? (
+                    <Image
+                      src={'/images/double_damage_card.jpeg'}
+                      width={150}
+                      height={220}
+                    />
+                  ) : (
+                    ''
+                  )}
+                  {cardPocket[0] === 'Angel Card' ? (
+                    <Image
+                      src={'/images/angel_card.jpeg'}
+                      width={150}
+                      height={220}
+                    />
+                  ) : (
+                    ''
+                  )}
                 </div>
                 <div className="flex flex-row justify-center items-center">
                   <h1 className="font-light text-white">Your Dice</h1>
@@ -958,13 +979,13 @@ export default function Play() {
               {mode === 'hard' ? <HardBoard /> : <div className="hidden"></div>}
 
               <div
-                className={`rounded-full w-12 h-12 absolute animate__animated animate__bounce animate_slower animate__infinite`}
+                className={`rounded-full w-20 h-20 absolute animate__animated animate__bounce animate_slower animate__infinite`}
                 style={{ top: `${position.top}px`, left: `${position.left}px` }}
               >
                 <Image
-                  src={`/images/characters/character${character}_head.png`}
-                  height={48}
-                  width={48}
+                  src={`/images/characters/character${character}_fullbody.png`}
+                  height={200}
+                  width={150}
                   quality={100}
                   alt="character"
                 />
