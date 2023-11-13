@@ -23,6 +23,7 @@
     "react-dice-roll": "^1.2.2",
     "react-dom": "^18",
     "react-sound": "^1.2.0",
+    "react-sprite-animator": "^2.0.2",
     "react-wheel-of-prizes": "^1.0.9",
     "use-sound": "^4.0.1"
   },

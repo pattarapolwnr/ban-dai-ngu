@@ -26,6 +26,10 @@ import heal from '../public/sounds/sfx/heal.mp3';
 import { EasyBoard } from '@/components/easy_board';
 import MediumBoard from '@/components/medium_board';
 import warp from '../public/sounds/sfx/warp.mp3';
+import decision from '../public/sounds/sfx/decide.mp3';
+import player_slash from '../public/sounds/sfx/player_slash.mp3';
+import monster_slash from '../public/sounds/sfx/monster_slash.mp3';
+import { SpriteAnimator } from 'react-sprite-animator';
 
 const righteous = Righteous({
   subsets: ['latin'],
@@ -56,6 +60,10 @@ export default function Play() {
   const [playHeal] = useSound(heal);
   const [playWin] = useSound(win);
   const [playLose] = useSound(lose);
+  const [playWarpSound] = useSound(warp);
+  const [playDecision] = useSound(decision);
+  const [playPlayerSlash] = useSound(player_slash);
+  const [playMonsterSlash] = useSound(monster_slash);
 
   //Character Position
   const [index, setIndex] = useState(1);
@@ -76,8 +84,9 @@ export default function Play() {
   const [playerDiceNumber, setPlayerDiceNumber] = useState(0);
   const [monsterDiceNumber, setMonsterDiceNumber] = useState(0);
 
-  //sound
-  const [playWarpSound] = useSound(warp);
+  //animation
+  const [monsterAnimation, setMonsterAnimation] = useState('monster_idle');
+  const [playerAnimation, setPlayerAnimation] = useState('player_idle');
 
   //Spinning wheel
   const segColors = [
@@ -277,6 +286,7 @@ export default function Play() {
       playFootstep();
     }
     if (teleport.isTeleport) {
+      playDecision();
       setOpenTeleportModal(true);
     }
   };
@@ -322,11 +332,15 @@ export default function Play() {
           if (monsterHP <= 2) {
             const teleport = check_isTeleport(index, mode);
             alert('Player wins this battle');
+            setPlayerAnimation('player_attack');
+            playPlayerSlash();
             setMonsterHP(maxMonsterHP);
             setCardPocket([]);
             setTimeout(() => {
               setOpenMonsterModal(false);
+              setPlayerAnimation('player_idle');
               if (teleport.isTeleport) {
+                playDecision();
                 setOpenTeleportModal(true);
               }
             }, 1000);
@@ -334,14 +348,20 @@ export default function Play() {
             return;
           } else {
             alert('Player wins this turn');
+            setPlayerAnimation('player_attack');
+            playPlayerSlash();
             setMonsterHP((prevHP) => prevHP - 2);
             resetBattleDices();
+            setTimeout(() => setPlayerAnimation('player_idle'), 500);
             return;
           }
         } else if (playerDiceNumber < monsterDiceNumber) {
           playMonsterAttack();
+          setMonsterAnimation('monster_attack');
           alert('Monster wins this turn');
+          playMonsterSlash();
           setHP((prevHP) => prevHP - 1);
+          setTimeout(() => setMonsterAnimation('monster_idle'), 500);
           resetBattleDices();
           return;
         } else {
@@ -356,11 +376,15 @@ export default function Play() {
           if (monsterHP === 1) {
             const teleport = check_isTeleport(index, mode);
             alert('Player wins this battle');
+            setPlayerAnimation('player_attack');
+            playPlayerSlash();
             setCardPocket([]);
             setTimeout(() => {
               setMonsterHP(maxMonsterHP);
+              setPlayerAnimation('player_idle');
               setOpenMonsterModal(false);
               if (teleport.isTeleport) {
+                playDecision();
                 setOpenTeleportModal(true);
               }
             }, 500);
@@ -368,15 +392,21 @@ export default function Play() {
             return;
           } else {
             alert('Player wins this turn');
+            setPlayerAnimation('player_attack');
+            playPlayerSlash();
             setMonsterHP((prevHP) => prevHP - 1);
+            setTimeout(() => setPlayerAnimation('player_idle'), 500);
             resetBattleDices();
             return;
           }
         } else if (playerDiceNumber < monsterDiceNumber) {
           playMonsterAttack();
+          setMonsterAnimation('monster_attack');
           alert('Monster wins this turn');
+          playMonsterSlash();
           setHP((prevHP) => prevHP - 1);
           resetBattleDices();
+          setTimeout(() => setMonsterAnimation('monster_idle'), 500);
           return;
         } else {
           //eaual Dice number
@@ -584,6 +614,7 @@ export default function Play() {
       if (cardPocket.length > 0) {
         if (cardPocket[0] === 'Angel Card') {
           setTimeout(() => {
+            playDecision();
             setOpenAngelCard(true);
           }, 500);
 
@@ -593,15 +624,16 @@ export default function Play() {
             return;
           }
         }
+      } else {
+        setTimeout(() => {
+          setOpenTrapModal(true);
+        }, 500);
+        setTimeout(() => {
+          playSpin();
+        }, 2000);
+        setLandingEffect('');
+        return;
       }
-      setTimeout(() => {
-        setOpenTrapModal(true);
-      }, 500);
-      setTimeout(() => {
-        playSpin();
-      }, 2000);
-      setLandingEffect('');
-      return;
     } else if (landingEffect === 'mystery') {
       setTimeout(() => {
         setOpenMysteryModal(true);
@@ -622,6 +654,7 @@ export default function Play() {
       if (teleport.isTeleport) {
         setTeleportTo(teleport.teleport_to);
         setTimeout(() => {
+          playDecision();
           setOpenTeleportModal(true);
         }, 500);
       }
@@ -777,7 +810,7 @@ export default function Play() {
       </Modal>
 
       {/* Battle with Monster Modal */}
-      <Modal show={openMonsterModal} size="4xl" popup>
+      <Modal show={openMonsterModal} size="7xl" popup>
         <Modal.Header />
         <Modal.Body>
           <Sound
@@ -796,6 +829,31 @@ export default function Play() {
             </h1>
             {/* Body */}
             <div className="flex flex-row justify-center items-center my-10">
+              {/* Player animation */}
+              <div className="flex flex-col justify-center items-center w-56">
+                {playerAnimation === 'player_idle' ? (
+                  <SpriteAnimator
+                    sprite="/sprites/character1_idle.png"
+                    width={128}
+                    height={64}
+                    fps={12}
+                    scale={0.3}
+                  />
+                ) : (
+                  <div className="hidden"></div>
+                )}
+                {playerAnimation === 'player_attack' ? (
+                  <SpriteAnimator
+                    sprite="/sprites/character1_attack.png"
+                    width={128}
+                    height={64}
+                    fps={12}
+                    scale={0.3}
+                  />
+                ) : (
+                  <div className="hidden"></div>
+                )}
+              </div>
               {/* Player */}
               <div className="flex flex-col justify-center items-center w-80">
                 <h1>Player</h1>
@@ -812,7 +870,7 @@ export default function Play() {
                 </div>
               </div>
               {/* Monster */}
-              <div className="flex flex-col justify-center items-center w-80">
+              <div className="flex flex-col justify-center items-center w-60">
                 <h1>Monster</h1>
                 <div className="grid grid-cols-3 gap-3 my-4 h-28">
                   {monsterHP_Bar}
@@ -826,6 +884,31 @@ export default function Play() {
                     triggers={['Enter']}
                   />
                 </div>
+              </div>
+              {/* Monster Animation */}
+              <div className="flex flex-col justify-center items-center w-56">
+                {monsterAnimation === 'monster_idle' ? (
+                  <SpriteAnimator
+                    sprite="/sprites/monster_idle.png"
+                    width={140}
+                    height={93}
+                    fps={12}
+                    scale={0.4}
+                  />
+                ) : (
+                  <div className="hidden"></div>
+                )}
+                {monsterAnimation === 'monster_attack' ? (
+                  <SpriteAnimator
+                    sprite="/sprites/monster_attack.png"
+                    width={140}
+                    height={93}
+                    fps={12}
+                    scale={0.4}
+                  />
+                ) : (
+                  <div className="hidden"></div>
+                )}
               </div>
             </div>
           </div>
