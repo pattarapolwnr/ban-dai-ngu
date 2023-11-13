@@ -936,7 +936,7 @@ export default function Play() {
                   <h1 className="text-white">Card Pocket:</h1>
                   {cardPocket[0] === 'Double Damage' ? (
                     <Image
-                      src={'/images/double_damage_card.jpeg'}
+                      src={'/images/double_damage_card.JPEG'}
                       width={150}
                       height={220}
                     />
@@ -945,7 +945,7 @@ export default function Play() {
                   )}
                   {cardPocket[0] === 'Angel Card' ? (
                     <Image
-                      src={'/images/angel_card.jpeg'}
+                      src={'/images/angel_card.JPEG'}
                       width={150}
                       height={220}
                     />
