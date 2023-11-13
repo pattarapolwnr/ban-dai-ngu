@@ -397,7 +397,8 @@ export default function Play() {
           <FontAwesomeIcon
             icon={faHeart}
             beat
-            style={{ fontSize: '32px', color: '#FFC0CB' }}
+            style={{ fontSize: '32px' }}
+            className="heart"
             key={index}
           />
         );
@@ -412,7 +413,10 @@ export default function Play() {
           <FontAwesomeIcon
             icon={faHeart}
             beat
-            style={{ fontSize: '32px', color: '#AFE1AF' }}
+            className="text-3xl"
+            style={{
+              color: 'rgba(254,37,27,1)',
+            }}
             key={index}
           />
         );
@@ -454,7 +458,10 @@ export default function Play() {
           <FontAwesomeIcon
             icon={faHeart}
             beat
-            style={{ fontSize: '32px', color: '#FFC0CB' }}
+            className="text-3xl"
+            style={{
+              color: 'rgba(254,37,27,1)',
+            }}
             key={index}
           />
         );
@@ -827,23 +834,23 @@ export default function Play() {
 
       <div className="flex items-center justify-center min-h-screen">
         <div
-          className={`${righteous.className} relative flex flex-col m-6 shadow-2xl rounded-2xl bg-white w-gamewidth h-gameheight`}
+          className={`${righteous.className} relative flex flex-col m-6 shadow-2xl rounded-2xl bg-play-bg w-gamewidth h-gameheight`}
         >
           <div className="flex justify-center items-center w-full px-10 py-1">
             {/* Left Section */}
             <div className="flex flex-col w-1/4 justify-center items-center text-gray-950">
               <div className="flex flex-col  space-y-20">
                 <div className="flex flex-row space-x-10 justify-center items-center">
-                  <h1>Your HP</h1>
+                  <h1 className="text-white">Your HP</h1>
                   <div className="grid grid-cols-3 gap-4">{HP_Bar}</div>
                 </div>
                 <div className="flex justify-start items-center">
-                  <h1 className="">
+                  <h1 className="text-white">
                     Card Pocket: {cardPocket ? cardPocket[0] : ''}
                   </h1>
                 </div>
                 <div className="flex flex-row justify-center items-center">
-                  <h1 className="font-light text-gray-500">Your Dice</h1>
+                  <h1 className="font-light text-white">Your Dice</h1>
                   <div className="ml-10">
                     <Dice
                       size={100}

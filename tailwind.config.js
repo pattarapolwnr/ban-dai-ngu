@@ -12,6 +12,7 @@ module.exports = {
       backgroundImage: {
         'start-bg': "url('/images/bg_edit.png')",
         'character-bg': "url('/images/bg_scene2.png')",
+        'play-bg': "url('/images/play_background.jpeg')",
       },
       width: {
         gamewidth: '80rem',
