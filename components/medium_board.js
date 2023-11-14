@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { SpriteAnimator } from 'react-sprite-animator';
 export const MediumBoard = () => {
   return (
     <div className="ml-10 grid grid-cols-12 gap-2 text-center relative">
@@ -6,9 +7,18 @@ export const MediumBoard = () => {
         <h1 className="">50</h1>
         <h1 className="">Finish</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg px-6 py-6">
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg shadow-lg px-6 py-6">
         <h1 className="">49</h1>
         <h1 className="text-xs">Mystery</h1>
+        <div className="absolute bottom-[50px]">
+          <SpriteAnimator
+            sprite="/sprites/random_box.png"
+            width={32}
+            height={32}
+            fps={6}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="flex flex-col justify-center items-center bg-white rounded-lg px-6 py-6">
         <h1 className="">48</h1>
@@ -27,9 +37,18 @@ export const MediumBoard = () => {
         <h1 className="">44</h1>
         <h1 className="">Card</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg px-6 py-6">
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg shadow-lg px-6 py-6">
         <h1 className="">43</h1>
         <h1 className="text-xs">Mystery</h1>
+        <div className="absolute bottom-[50px]">
+          <SpriteAnimator
+            sprite="/sprites/random_box.png"
+            width={32}
+            height={32}
+            fps={6}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="flex flex-col justify-center items-center bg-gradient-to-b from-cyan-100 to-cyan-500 rounded-lg px-6 py-6">
         <h1 className="">42</h1>
@@ -56,9 +75,18 @@ export const MediumBoard = () => {
       <div className="px-6 py-6"></div>
       <div className="px-6 py-6"></div>
       <div className="px-6 py-6"></div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg px-6 py-6">
-        <h1 className="">38</h1>
-        <h1 className="">Trap</h1>
+      <div className="relative h-24 flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg shadow-lg px-6 py-6">
+        <h1 className="absolute z-50 text-white top-1 text-xs">38</h1>
+        <h1 className="absolute z-50 text-white bottom-1 text-xs">trap</h1>
+        <div className="absolute bottom-[28px]">
+          <SpriteAnimator
+            sprite="/sprites/fire_trap.png"
+            width={32}
+            height={41}
+            fps={12}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">26</h1>
@@ -66,20 +94,47 @@ export const MediumBoard = () => {
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">27</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg px-6 py-6">
-        <h1 className="">28</h1>
-        <h1 className="">Trap</h1>
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg shadow-lg px-6 py-6">
+        <h1 className="absolute z-50 text-white top-1 text-xs">28</h1>
+        <h1 className="absolute z-50 text-white bottom-1 text-xs">trap</h1>
+        <div className="absolute bottom-[28px]">
+          <SpriteAnimator
+            sprite="/sprites/fire_trap.png"
+            width={32}
+            height={41}
+            fps={12}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">29</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg px-6 py-6">
-        <h1 className="">30</h1>
-        <h1 className="">Trap</h1>
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg shadow-lg px-6 py-6">
+        <h1 className="absolute z-50 text-white top-1 text-xs">30</h1>
+        <h1 className="absolute z-50 text-white bottom-1 text-xs">trap</h1>
+        <div className="absolute bottom-[28px]">
+          <SpriteAnimator
+            sprite="/sprites/fire_trap.png"
+            width={32}
+            height={41}
+            fps={12}
+            scale={0.5}
+          />
+        </div>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg px-6 py-6">
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg shadow-lg px-6 py-6">
         <h1 className="">31</h1>
         <h1 className="text-xs">Mystery</h1>
+        <div className="absolute bottom-[60px]">
+          <SpriteAnimator
+            sprite="/sprites/random_box.png"
+            width={32}
+            height={32}
+            fps={6}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="flex flex-col justify-center items-center bg-gradient-to-b from-cyan-100 to-cyan-500 rounded-lg px-6 py-6">
         <h1 className="">32</h1>
@@ -102,9 +157,18 @@ export const MediumBoard = () => {
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">37</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg px-6 py-6">
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg shadow-lg px-6 py-6">
         <h1 className="">25</h1>
         <h1 className="text-xs">Mystery</h1>
+        <div className="absolute bottom-[60px]">
+          <SpriteAnimator
+            sprite="/sprites/random_box.png"
+            width={32}
+            height={32}
+            fps={6}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="px-6 py-6"></div>
       <div className="px-6 py-6"></div>
@@ -125,9 +189,18 @@ export const MediumBoard = () => {
         <h1 className="">23</h1>
         <h1 className="">Card</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg px-6 py-6">
-        <h1 className="">22</h1>
-        <h1 className="">Trap</h1>
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg shadow-lg px-6 py-6">
+        <h1 className="absolute z-50 text-white top-1 text-xs">22</h1>
+        <h1 className="absolute z-50 text-white bottom-1 text-xs">trap</h1>
+        <div className="absolute bottom-[28px]">
+          <SpriteAnimator
+            sprite="/sprites/fire_trap.png"
+            width={32}
+            height={41}
+            fps={12}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">21</h1>
@@ -135,16 +208,34 @@ export const MediumBoard = () => {
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">20</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg px-6 py-6">
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg shadow-lg px-6 py-6">
         <h1 className="">19</h1>
         <h1 className="text-xs">Mystery</h1>
+        <div className="absolute bottom-[60px]">
+          <SpriteAnimator
+            sprite="/sprites/random_box.png"
+            width={32}
+            height={32}
+            fps={6}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">18</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg px-6 py-6">
-        <h1 className="">17</h1>
-        <h1 className="">Trap</h1>
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg shadow-lg px-6 py-6">
+        <h1 className="absolute z-50 text-white top-1 text-xs">17</h1>
+        <h1 className="absolute z-50 text-white bottom-1 text-xs">trap</h1>
+        <div className="absolute bottom-[28px]">
+          <SpriteAnimator
+            sprite="/sprites/fire_trap.png"
+            width={32}
+            height={41}
+            fps={12}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="flex flex-col justify-center items-center bg-gradient-to-b from-cyan-100 to-cyan-500 rounded-lg px-6 py-6">
         <h1 className="">16</h1>
@@ -157,9 +248,18 @@ export const MediumBoard = () => {
       <div className="bg-white rounded-lg px-6 py-6">
         <h1 className="">14</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg px-6 py-6">
-        <h1 className="">13</h1>
-        <h1 className="">Trap</h1>
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg shadow-lg px-6 py-6">
+        <h1 className="absolute z-50 text-white top-1 text-xs">13</h1>
+        <h1 className="absolute z-50 text-white bottom-1 text-xs">trap</h1>
+        <div className="absolute bottom-[28px]">
+          <SpriteAnimator
+            sprite="/sprites/fire_trap.png"
+            width={32}
+            height={41}
+            fps={12}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="px-6 py-6"></div>
       <div className="px-6 py-6"></div>
@@ -196,13 +296,31 @@ export const MediumBoard = () => {
         <h1 className="">5</h1>
         <h1 className="">Card</h1>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg px-6 py-6">
-        <h1 className="">6</h1>
-        <h1 className="">Trap</h1>
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-red-300 to-red-600 rounded-lg shadow-lg px-6 py-6">
+        <h1 className="absolute z-50 text-white top-1 text-xs">6</h1>
+        <h1 className="absolute z-50 text-white bottom-1 text-xs">trap</h1>
+        <div className="absolute bottom-[28px]">
+          <SpriteAnimator
+            sprite="/sprites/fire_trap.png"
+            width={32}
+            height={41}
+            fps={12}
+            scale={0.5}
+          />
+        </div>
       </div>
-      <div className="flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg px-6 py-6">
+      <div className="relative flex flex-col justify-center items-center bg-gradient-to-b from-purple-100 to-purple-400 rounded-lg shadow-lg px-6 py-6">
         <h1 className="">7</h1>
         <h1 className="text-xs">Mystery</h1>
+        <div className="absolute bottom-[60px]">
+          <SpriteAnimator
+            sprite="/sprites/random_box.png"
+            width={32}
+            height={32}
+            fps={6}
+            scale={0.5}
+          />
+        </div>
       </div>
       <div className="flex flex-col justify-center items-center bg-gradient-to-b from-cyan-100 to-cyan-500 rounded-lg px-6 py-6">
         <h1 className="">8</h1>

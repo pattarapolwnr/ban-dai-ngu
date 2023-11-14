@@ -802,6 +802,8 @@ export default function Play() {
           <div className="text-center">
             <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
               Do you want to teleport?
+              <br />
+              (Caution! Some warp may make you encounter Trap or Monster)
             </h3>
             <div className="flex justify-center gap-4">
               <Button
