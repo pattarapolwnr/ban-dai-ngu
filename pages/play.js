@@ -634,6 +634,13 @@ export default function Play() {
             setLandingEffect('');
             return;
           }
+          // Have a card but not Angel Card
+        } else {
+          setTimeout(() => {
+            setOpenTrapModal(true);
+          }, 500);
+          setLandingEffect('');
+          return;
         }
       } else {
         setTimeout(() => {
