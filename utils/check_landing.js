@@ -3,7 +3,7 @@ export default function check_landing(index, mode) {
     let cards = [2, 5, 8, 12, 16, 23, 32, 36, 42, 44];
     let traps = [13, 17, 22, 28, 38];
     let monsters = [10, 24, 34, 40, 46];
-    let mystery = [7, 19, 25, 31, 43];
+    let mystery = [7, 19, 25, 31, 43, 49];
     if (cards.includes(index)) {
       return 'cards';
     } else if (traps.includes(index)) {
